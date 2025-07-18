@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crypto Bet Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0c0c0c;
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #1c1c1c;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    input, button, select {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #03a9f4;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #language-toggle {
+      float: right;
+      background: none;
+      color: #03a9f4;
+      border: 1px solid #03a9f4;
+      width: auto;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button id="language-toggle">አማ</button>
+    <h1 id="title">Crypto Bet Game</h1>
+
+    <button onclick="connectWallet()" id="connectBtn">Connect Wallet</button>
+    <p id="walletAddress"></p>
+
+    <label id="amountLabel">Enter Amount</label>
+    <input type="number" id="amount" placeholder="e.g. 0.005" />
+
+    <label id="cryptoLabel">Choose Crypto</label>
+    <select id="crypto">
+      <option value="ETH">ETH</option>
+      <option value="BTC">BTC</option>
+      <option value="BNB">BNB</option>
+      <option value="USDT">USDT</option>
+    </select>
+
+    <button onclick="placeBet()" id="betBtn">Place Bet</button>
+    <p id="usdtValue">USDT Value: $0</p>
+
+    <button onclick="withdraw()" id="withdrawBtn">Withdraw Winnings</button>
+  </div>
+
+  <script>
+    let lang = 'en';
+
+    const texts = {
+      en: {
+        title: "Crypto Bet Game",
+        connect: "Connect Wallet",
+        amount: "Enter Amount",
+        choose: "Choose Crypto",
+        placeBet: "Place Bet",
+        withdraw: "Withdraw Winnings",
+      },
+      am: {
+        title: "የክሪፕቶ ውር ጨዋታ",
+        connect: "ቦርሳ አገናኝ",
+        amount: "መጠን ያስገቡ",
+        choose: "ክሪፕቶ ይምረጡ",
+        placeBet: "ውር ይግቡ",
+        withdraw: "ዋጋውን ያስወግዱ",
+      }
+    };
+
+    document.getElementById("language-toggle").onclick = () => {
+      lang = lang === "en" ? "am" : "en";
+      setLanguage();
+    };
+
+    function setLanguage() {
+      document.getElementById("title").innerText = texts[lang].title;
+      document.getElementById("connectBtn").innerText = texts[lang].connect;
+      document.getElementById("amountLabel").innerText = texts[lang].amount;
+      document.getElementById("cryptoLabel").innerText = texts[lang].choose;
+      document.getElementById("betBtn").innerText = texts[lang].placeBet;
+      document.getElementById("withdrawBtn").innerText = texts[lang].withdraw;
+      document.getElementById("language-toggle").innerText = lang === 'en' ? 'አማ' : 'EN';
+    }
+
+    async function connectWallet() {
+      if (typeof window.ethereum !== "undefined") {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        document.getElementById("walletAddress").innerText = `Wallet: ${accounts[0]}`;
+      } else {
+        alert("No wallet found");
+      }
+    }
+
+    async function placeBet() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const crypto = document.getElementById("crypto").value;
+
+      if (!amount || amount <= 0) {
+        alert("Invalid amount");
+        return;
+      }
+
+      const usdt = await convertToUSDT(crypto, amount);
+      document.getElementById("usdtValue").innerText = `USDT Value: $${usdt.toFixed(2)}`;
+
+      alert(`Bet placed with ${amount} ${crypto} (~$${usdt})`);
+    }
+
+    function withdraw() {
+      alert("Winnings withdrawn!");
+    }
+
+    async function convertToUSDT(crypto, amount) {
+      // Mock average rates for now
+      const rates = {
+        ETH: 3200,
+        BTC: 61000,
+        BNB: 520,
+        USDT: 1,
+      };
+
+      const rate = rates[crypto.toUpperCase()] || 1;
+      return amount * rate;
+    }
+
+    setLanguage();
+  </script>
+</body>
+</html>
